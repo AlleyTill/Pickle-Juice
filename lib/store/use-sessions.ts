@@ -37,13 +37,9 @@ export function useAllSessions(): Session[] {
   }, [rows]);
 }
 
-export function useActiveSession(): {
-  active: ActiveSession;
-  loading: boolean;
-} {
+export function useActiveSession(): ActiveSession {
   const row = useLiveQuery(() => getDb().meta.get("active_session"), []);
-  const loading = row === undefined;
-  const active: ActiveSession = useMemo(() => {
+  return useMemo(() => {
     if (!row) return null;
     try {
       return JSON.parse(row.value) as ActiveSession;
@@ -51,7 +47,6 @@ export function useActiveSession(): {
       return null;
     }
   }, [row]);
-  return { active, loading };
 }
 
 export function useElapsedSeconds(active: ActiveSession): number {
@@ -77,7 +72,7 @@ export interface StartAttempt {
 }
 
 export function useTimerActions() {
-  const { active } = useActiveSession();
+  const active = useActiveSession();
 
   const start = useCallback(
     async (category: Category): Promise<StartAttempt> => {

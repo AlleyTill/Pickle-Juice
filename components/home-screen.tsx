@@ -15,7 +15,7 @@ const CATEGORY_COPY: Record<Category, { label: string; swatch: string }> = {
 };
 
 export function HomeScreen() {
-  const { active, loading } = useActiveSession();
+  const active = useActiveSession();
   const elapsed = useElapsedSeconds(active);
   const { start, stop } = useTimerActions();
   const [pendingCategory, setPendingCategory] = useState<Category | null>(null);
@@ -43,14 +43,6 @@ export function HomeScreen() {
     await stop();
     await start(pendingCategory);
     setPendingCategory(null);
-  }
-
-  if (loading) {
-    return (
-      <div className="flex flex-1 items-center justify-center">
-        <p className="text-muted">Loading…</p>
-      </div>
-    );
   }
 
   if (active) {

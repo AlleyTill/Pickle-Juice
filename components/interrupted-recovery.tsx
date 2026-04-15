@@ -9,7 +9,7 @@ import { formatDuration } from "./format";
 import * as timer from "@/lib/domain/timer";
 
 export function InterruptedRecovery() {
-  const { active, loading } = useActiveSession();
+  const active = useActiveSession();
   const { endInterruptedNow } = useTimerActions();
   const [snapshot, setSnapshot] = useState<{
     category: "consume" | "create";
@@ -19,15 +19,12 @@ export function InterruptedRecovery() {
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
-    if (loading || dismissed || !active) return;
-    if (snapshot) return;
+    if (dismissed || !active || snapshot) return;
     const summary = timer.describeInterrupted(active, new Date().toISOString());
-    // Only prompt if the session has been running long enough that it was
-    // plausibly left behind across a reload (e.g. ≥ 60s).
     if (summary.elapsedSeconds >= 60) {
       setSnapshot(summary);
     }
-  }, [active, loading, snapshot, dismissed]);
+  }, [active, snapshot, dismissed]);
 
   if (!snapshot) return null;
 
